@@ -1,0 +1,66 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block title %}Social Network -Profile{% endblock %}
+
+{% block body %}
+    <!--  profile -->
+    <div class="container profile">
+        <div class="row">
+            <div class="col-md-2">
+                <i class="material-icons" style="font-size:150px;color:rgb(170, 237, 237)">account_circle</i>
+            </div>
+            <div class="col-md-10">
+                <h1>{{puser.username}}</h1>
+                <hr>
+                {% if user.is_authenticated %}
+                    {% if user.id != puser.id %}
+                        {% if follow == 0 %}
+                            <a href="{% url 'follow' puser.id %}" class="btn btn-primary">Follow</a>
+                            <br><br>
+                        {% else %}
+                            <a href="{% url 'unfollow' puser.id %}" class="btn btn-primary">UnFollow</a>
+                            <br><br>
+                        {% endif %}
+                    
+                    {% endif %} 
+                {% endif %}
+                
+                <p>Followers: <strong>{{numOfFollowers}}</strong></p>
+                <p>Following: <strong>{{numOfFollowings}}</strong></p>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="posts">
+        {% for post in posts %}
+            <div class="post">
+                <a href="{% url 'profile' post.owner.id %}"><h3>{{post.owner}}</h3></a>
+                {% if user.id == puser.id %}
+                    <div class="btn btn-primary update" data-id="{{post.id}}">Edit</div>
+                {% endif %} 
+                <p>{{post.content}}</p>
+                <div class="edit">
+                    <form class="NewContent" data-id="{{post.id}}">
+                        <div class="mb-3">
+                            <textarea class="form-control"  rows="5" name="content">{{post.content}}</textarea>
+                        </div>
+                        <input type="submit" value="Save" class="btn btn-primary">
+                    </form>
+                </div>
+                <div class="like">
+                    <i  class="material-icons lik" style="font-size:25px; color:gray;" data-id="{{post.id}}">thumb_up</i>
+                    <span>{{post.likes}}</span>
+                 </div>
+                <p>{{post.date}}</p>
+            </div>
+        {% endfor %}
+    </div>    
+
+
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/net.js' %}"></script>
+{% endblock %}

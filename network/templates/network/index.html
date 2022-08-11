@@ -1,0 +1,82 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block title %}Social Network - Home{% endblock %}
+
+{% block body %}
+
+    <h1>All Posts</h1>
+    <!-- make post -->
+    {% if user.is_authenticated %}
+        <div class="newPost">
+            <h3>New Post</h3>
+            <form action="{% url 'makePost' %}" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea class="form-control" placeholder="write post..." rows="5" name="content"></textarea>
+                </div>
+                <input type="submit" value="post" class="btn btn-primary">
+            </form>
+        </div>           
+    {% endif %}
+
+    <!-- posts -->
+    <div id="allPosts">
+        <div class="posts">
+            {% for post in posts %}
+                <div class="post">
+                    <a href="{% url 'profile' post.owner.id %}"><h3>{{post.owner}}</h3></a>
+                    {% if user.id == post.owner.id %}
+                        <div class="btn btn-primary update" data-id="{{post.id}}">Edit</div>
+                    {% endif %} 
+                    <p>{{post.content}}</p>
+                    <div class="edit">
+                        <form class="NewContent" data-id="{{post.id}}">
+                            <div class="mb-3">
+                                <textarea class="form-control"  rows="5" name="content">{{post.content}}</textarea>
+                            </div>
+                            <input type="submit" value="save" class="btn btn-primary">
+                        </form>
+                    </div>
+                    <div class="like">
+                        <i  class="material-icons lik" style="font-size:25px; color:gray;" data-id="{{post.id}}">thumb_up</i>
+                        <span>{{post.likes}}</span>
+                    </div>
+                    <p>{{post.date}}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="buttons">
+            {% if f == 0 %}
+                {% if posts.has_previous %}
+                    <a href="?page={{ posts.previous_page_number }}">Previous</a>
+                {% else %}
+                <!-- <li class="disabled"><span>&laquo;</span></li> -->
+                {% endif %}
+                {% if posts.has_next %}
+                    <a href="?page={{ posts.next_page_number }}">Next</a>
+                {% else %}
+                <!-- <li class="disabled"><span>&raquo;</span></li> -->
+                {% endif %}
+            {% else %}
+                {% if posts.has_previous %}
+                    <a href="following?page={{ posts.previous_page_number }}">Previous</a>
+                {% else %}
+                <!-- <li class="disabled"><span>&laquo;</span></li> -->
+                {% endif %}
+                {% if posts.has_next %}
+                    <a href="following?page={{ posts.next_page_number }}">Next</a>
+                {% else %}
+                <!-- <li class="disabled"><span>&raquo;</span></li> -->
+                {% endif %}
+            {% endif %}
+           
+        </div>
+        
+    </div>
+
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/net.js' %}"></script>
+{% endblock %}
